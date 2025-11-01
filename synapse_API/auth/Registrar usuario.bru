@@ -1,0 +1,22 @@
+meta {
+  name: Registrar usuario
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://127.0.0.1:5000/api/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+   { "correo": 
+    "koal@example.com",
+    "password": "123456789", 
+    "Username": "Koal2" }
+}
+
+settings {
+  encodeUrl: true
+}

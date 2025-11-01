@@ -1,0 +1,19 @@
+meta {
+  name: progreso dia
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://127.0.0.1:5000/api/progreso/hoy
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1ODU5ODU4NywianRpIjoiOGM2YTk5YzgtNzgxMC00NjhlLTg3ODgtNmE3MjI0NGZlYTA0IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjAyMmQyMThlLWZhMzEtNDBmZC04NTlmLTY2Y2Y5YzBiOTA0ZiIsIm5iZiI6MTc1ODU5ODU4NywiY3NyZiI6IjYxNzA2MTBkLTc4NTgtNGRmYy1hZWExLTZmYjc2MjA5OGUyMiIsImV4cCI6MTc1ODY4NDk4N30.qV0I841RxcjRVA_aDDyJmseELpZzMwla4pks4wmnaS8
+}
+
+settings {
+  encodeUrl: true
+}

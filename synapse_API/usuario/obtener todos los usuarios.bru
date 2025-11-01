@@ -1,0 +1,19 @@
+meta {
+  name: obtener todos los usuarios
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://127.0.0.1:5000/api/usuarios
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1ODY4NTIwOSwianRpIjoiNGViYjcwM2ItN2FlOC00ZTM3LWE5YzYtNWFhYjFhN2NjZjIyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImMzNzVjN2VjLTFmNzItNDE0Mi1hODQzLTBhN2U3ZGFjOTc4NCIsIm5iZiI6MTc1ODY4NTIwOSwiY3NyZiI6IjFiMjk0YTRkLTg2NWYtNDQ5Ny04ZmM0LWNiNDhmODhkZTE2MCIsImV4cCI6MTc1ODc3MTYwOX0.Wuk40mPmcMUTCOXRwu4hB289-zZQHtE1yF3mBdUYjJw
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,129 @@
+# === BACKEND PYTHON / FLASK ===
+backend/venv/
+backend/__pycache__/
+backend/.env
+backend/.env.local
+backend/.env.production
+backend/*.db
+backend/*.sqlite3
+backend/migrations/versions/
+backend/migrations/*.pyc
+backend/instance/
+backend/logs/
+backend/.pytest_cache/
+backend/__init__.pyc
+backend/*.egg-info/
+backend/.coverage
+backend/htmlcov/
+backend/.flaskenv
+
+# === ALEMBIC (Flask-Migrate) ===
+backend/migrations/versions/*.py
+!backend/migrations/versions/README   # permite mantener la doc si la tienes
+
+# === FRONTEND REACT ===
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnpm-debug.log*
+
+# === BASE DE DATOS ===
+database/data/
+*.sql.backup
+*.sql
+*.dump
+
+# === SISTEMA ===
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# === EDITORES ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === LOGS ===
+*.log
+logs/
+
+# === CERTIFICADOS Y KEYS ===
+*.pem
+*.key
+*.crt
+
+# === ARCHIVOS TEMPORALES ===
+*.tmp
+*.temp
+.cache/
+
+# === PYTHON ESPECÍFICOS ===
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+.Python
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
+
+# === ARCHIVOS DE HERRAMIENTAS DE CONSTRUCCIÓN ===
+*.spec
+dist/
+build/
+
+# === ARCHIVOS DE EDITORES ===
+*.sublime-workspace
+*.sublime-project
+
+# === ARCHIVOS DE DOCKER ===
+Dockerfile*
+docker-compose*.yml
+*.dockerignore
+
+# === ARCHIVOS DE PRUEBAS Y COBERTURA ===
+.tox/
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
+
+# === ARCHIVOS DE FRONTEND Y NODE ===
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnpm-debug.log*
