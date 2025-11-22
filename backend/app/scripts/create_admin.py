@@ -22,7 +22,7 @@ def create_admin():
 
         # Crear usuario administrador
         admin_user = Usuario(
-            username='admin',
+            username='administrador',
             correo='admin@synapse.com',
             password=generate_password_hash('admin123'),  # Ver nota abajo
             rol_id=rol_admin.id,
