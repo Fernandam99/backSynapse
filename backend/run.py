@@ -1,5 +1,5 @@
-from backend.app import create_app
-from backend.models import db
+from app import create_app
+from app.models import db
 from flask_migrate import Migrate
 import os
 from dotenv import load_dotenv

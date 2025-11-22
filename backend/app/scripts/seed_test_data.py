@@ -7,11 +7,13 @@ from faker import Faker
 # Agrega la raíz del proyecto al path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from backend.app import create_app
-from backend.models import db, Rol, Usuario, Tarea, Tecnica, Sesion, Sala, UsuarioSala, Progreso, Recompensa, RecompensaUsuario
+from app import create_app
+from app.models import db, Rol, Usuario, Tarea, Tecnica, Sesion, Sala, UsuarioSala, Progreso, Recompensa, RecompensaUsuario
 
 fake = Faker()
 app = create_app()
+app.app_context().push()
+
 
 def seed_roles():
     if not Rol.query.first():

@@ -47,11 +47,11 @@ def get_tecnicas_populares():
         return jsonify({'error': str(e)}), 500
 
 
-@tecnica_bp.route('/<string:tecnica_id>', methods=['GET'])
+@tecnica_bp.route('/<string:id_tecnica>', methods=['GET'])
 @jwt_required()
-def get_tecnica(tecnica_id):
+def get_tecnica(id_tecnica):
     try:
-        tecnica = Tecnica.query.get(tecnica_id)
+        tecnica = Tecnica.query.get(id_tecnica)
         if not tecnica:
             return jsonify({'error': 'Técnica no encontrada'}), 404
         
@@ -88,11 +88,11 @@ def create_tecnica():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-@tecnica_bp.route('/<string:tecnica_id>', methods=['PUT'])
+@tecnica_bp.route('/<string:id_tecnica>', methods=['PUT'])
 @jwt_required()
-def update_tecnica(tecnica_id):
+def update_tecnica(id_tecnica):
     try:
-        tecnica = Tecnica.query.get(tecnica_id)
+        tecnica = Tecnica.query.get(id_tecnica)
         if not tecnica:
             return jsonify({'error': 'Técnica no encontrada'}), 404
         
@@ -115,11 +115,11 @@ def update_tecnica(tecnica_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-@tecnica_bp.route('/<string:tecnica_id>', methods=['DELETE'])
+@tecnica_bp.route('/<string:id_tecnica>', methods=['DELETE'])
 @jwt_required()
-def delete_tecnica(tecnica_id):
+def delete_tecnica(id_tecnica):
     try:
-        tecnica = Tecnica.query.get(tecnica_id)
+        tecnica = Tecnica.query.get(id_tecnica)
         if not tecnica:
             return jsonify({'error': 'Técnica no encontrada'}), 404
         

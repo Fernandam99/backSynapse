@@ -1,7 +1,7 @@
 from functools import wraps
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 from flask import jsonify
-from backend.models import Usuario, Rol
+from app.models import Usuario, Rol
 
 def admin_required(f):
     @wraps(f)

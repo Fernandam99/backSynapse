@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, Tarea, Usuario, Sala, UsuarioSala
-from datetime import datetime, date
+from datetime import date, datetime, timedelta
+from calendar import monthrange
 
 tarea_bp = Blueprint('tarea', __name__)
 
@@ -48,51 +49,53 @@ def get_tarea(id_tarea):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-@tarea_bp.route('', methods=['POST'])  
+@tarea_bp.route('', methods=['POST'])
 @jwt_required()
 def create_tarea():
     try:
         usuario_id = get_jwt_identity()
         data = request.get_json()
 
-        print(f"usuario_id: {usuario_id}, sala_id: {data.get('sala_id')}")
+        if not data or not isinstance(data, dict):
+            return jsonify({'error': 'Cuerpo de la solicitud inválido'}), 400
 
-        # Validar datos requeridos
-        if not data.get('titulo'):
+        # Validar campos obligatorios
+        titulo = data.get('titulo')
+        fecha_vencimiento_str = data.get('fecha_vencimiento')
+
+        if not titulo or not titulo.strip():
             return jsonify({'error': 'El título es requerido'}), 400
 
+        if not fecha_vencimiento_str:
+            return jsonify({'error': 'La fecha de vencimiento es requerida'}), 400
+
+        try:
+            fecha_vencimiento = datetime.strptime(fecha_vencimiento_str, '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({'error': 'Formato de fecha inválido. Use YYYY-MM-DD'}), 400
+
+        # Validar sala_id si se proporciona
         sala_id = data.get('sala_id')
         if sala_id:
-            # Verificar que el usuario pertenece a la sala
             usuario_sala = UsuarioSala.query.filter_by(
                 id_usuario=usuario_id,
                 id_sala=sala_id,
                 activo=True
             ).first()
-
-            print(f"usuario_sala: {usuario_sala}")  # Para ver si la relación existe
-
             if not usuario_sala:
                 return jsonify({'error': 'No perteneces a esta sala'}), 403
 
-        # Parsear fecha de vencimiento si se proporciona
-        fecha_vencimiento = None
-        if data.get('fecha_vencimiento'):
-            try:
-                fecha_vencimiento = datetime.strptime(data['fecha_vencimiento'], '%Y-%m-%d').date()
-            except ValueError:
-                return jsonify({'error': 'Formato de fecha inválido (YYYY-MM-DD)'}), 400
-
-        # Crear nueva tarea
+        # Crear tarea con valores por defecto del sistema
         nueva_tarea = Tarea(
             usuario_id=usuario_id,
             sala_id=sala_id,
-            titulo=data['titulo'],
-            descripcion=data.get('descripcion'),
+            titulo=titulo.strip(),
+            descripcion=data.get('descripcion', '').strip() if data.get('descripcion') else None,
             fecha_vencimiento=fecha_vencimiento,
             prioridad=data.get('prioridad', 'baja'),
-            estado=data.get('estado', 'Pendiente'),
-            comentario=data.get('comentario')
+            estado='Pendiente',  # Siempre comienza como Pendiente
+            comentario=data.get('comentario', '').strip() if data.get('comentario') else None
+            # id_tarea y fecha_creacion se generan automáticamente
         )
 
         db.session.add(nueva_tarea)
@@ -102,8 +105,9 @@ def create_tarea():
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
+        print(f"[ERROR CREATE TAREA] {str(e)}")
+        return jsonify({'error': 'Error interno al crear la tarea'}), 500
+    
 @tarea_bp.route('/<string:id_tarea>', methods=['PUT'])
 @jwt_required()
 def update_tarea(id_tarea):
@@ -187,41 +191,107 @@ def delete_tarea(id_tarea):
 def get_estadisticas_tareas():
     try:
         usuario_id = get_jwt_identity()
-        
-        # Contar tareas por estado
-        stats = {
-            'total': Tarea.query.filter_by(usuario_id=usuario_id).count(),
-            'pendientes': Tarea.query.filter_by(usuario_id=usuario_id, estado='Pendiente').count(),
-            'en_progreso': Tarea.query.filter_by(usuario_id=usuario_id, estado='EnProgreso').count(),
-            'en_espera': Tarea.query.filter_by(usuario_id=usuario_id, estado='EnEspera').count(),
-            'completadas': Tarea.query.filter_by(usuario_id=usuario_id, estado='Completado').count()
-        }
-        
-        # Tareas por prioridad
-        stats['por_prioridad'] = {
+        hoy = date.today()
+        primer_dia_mes = hoy.replace(day=1)
+        if hoy.month == 12:
+            ultimo_dia_mes = hoy.replace(year=hoy.year + 1, month=1, day=1) - timedelta(days=1)
+        else:
+            ultimo_dia_mes = hoy.replace(month=hoy.month + 1, day=1) - timedelta(days=1)
+
+        # Conteo básico por estado
+        total = Tarea.query.filter_by(usuario_id=usuario_id).count()
+        pendientes = Tarea.query.filter_by(usuario_id=usuario_id, estado='Pendiente').count()
+        en_progreso = Tarea.query.filter_by(usuario_id=usuario_id, estado='EnProgreso').count()
+        en_espera = Tarea.query.filter_by(usuario_id=usuario_id, estado='EnEspera').count()
+        completadas = Tarea.query.filter_by(usuario_id=usuario_id, estado='Completado').count()
+
+        # Por prioridad
+        por_prioridad = {
             'alta': Tarea.query.filter_by(usuario_id=usuario_id, prioridad='alta').count(),
             'media': Tarea.query.filter_by(usuario_id=usuario_id, prioridad='media').count(),
             'baja': Tarea.query.filter_by(usuario_id=usuario_id, prioridad='baja').count()
         }
-        
-        # Tareas vencidas (solo las no completadas)
-        hoy = date.today()
-        stats['vencidas'] = Tarea.query.filter(
+
+        # Tareas vencidas (no completadas y fecha_vencimiento < hoy)
+        vencidas = Tarea.query.filter(
             Tarea.usuario_id == usuario_id,
             Tarea.estado != 'Completado',
             Tarea.fecha_vencimiento < hoy
         ).count()
-        
-        # Tareas de hoy
-        stats['hoy'] = Tarea.query.filter(
+
+        # Tareas con vencimiento hoy
+        hoy_count = Tarea.query.filter(
             Tarea.usuario_id == usuario_id,
             Tarea.fecha_vencimiento == hoy
         ).count()
-        
-        return jsonify(stats), 200
-        
+
+        # Tareas recientes (últimos 5 días, ordenadas por fecha_creacion DESC)
+        hace_5_dias = hoy - timedelta(days=5)
+        recientes = Tarea.query.filter(
+            Tarea.usuario_id == usuario_id,
+            Tarea.fecha_creacion >= datetime.combine(hace_5_dias, datetime.min.time())
+        ).order_by(Tarea.fecha_creacion.desc()).limit(5).all()
+
+        # Actividad mensual (últimos 3 meses)
+        monthly = []
+        for i in range(3):
+            # Mes a analizar
+            if hoy.month - i <= 0:
+                mes = 12 + (hoy.month - i)
+                año = hoy.year - 1
+            else:
+                mes = hoy.month - i
+                año = hoy.year
+
+            # Primer y último día del mes
+            primer_dia = date(año, mes, 1)
+            if mes == 12:
+                ultimo_dia = date(año + 1, 1, 1) - timedelta(days=1)
+            else:
+                ultimo_dia = date(año, mes + 1, 1) - timedelta(days=1)
+
+            # Contar tareas creadas en ese mes
+            creadas = Tarea.query.filter(
+                Tarea.usuario_id == usuario_id,
+                Tarea.fecha_creacion >= datetime.combine(primer_dia, datetime.min.time()),
+                Tarea.fecha_creacion <= datetime.combine(ultimo_dia, datetime.max.time())
+            ).count()
+
+            # Contar tareas completadas en ese mes
+            completadas_mes = Tarea.query.filter(
+                Tarea.usuario_id == usuario_id,
+                Tarea.estado == 'Completado',
+                Tarea.fecha_creacion >= datetime.combine(primer_dia, datetime.min.time()),
+                Tarea.fecha_creacion <= datetime.combine(ultimo_dia, datetime.max.time())
+            ).count()
+
+            monthly.append({
+                'year': año,
+                'month': mes,
+                'creadas': creadas,
+                'completadas': completadas_mes
+            })
+
+        # Serializar recientes
+        recientes_data = [t.to_dict() for t in recientes]
+
+        return jsonify({
+            'total': total,
+            'pendientes': pendientes,
+            'en_progreso': en_progreso,
+            'en_espera': en_espera,
+            'completadas': completadas,
+            'por_prioridad': por_prioridad,
+            'vencidas': vencidas,
+            'hoy': hoy_count,
+            'recientes': recientes_data,
+            'monthly': monthly
+        }), 200
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"[ERROR ESTADISTICAS TAREAS] {str(e)}")
+        return jsonify({'error': 'Error interno al obtener estadísticas'}), 500
+
 @tarea_bp.route('/sala/<string:sala_id>', methods=['GET'])
 @jwt_required()
 def get_tareas_sala(sala_id):

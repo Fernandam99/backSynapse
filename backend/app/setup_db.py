@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pymysql
-from backend.run import create_app
+from app import create_app
 from app.models import db
 from app.config import Config
 

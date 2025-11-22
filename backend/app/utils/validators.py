@@ -1,6 +1,7 @@
 import re
 from datetime import datetime, date
 
+
 def validate_email(email):
     pattern = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
     if re.match(pattern, email):
@@ -16,7 +17,7 @@ def validate_password(password):
         return False, "La contraseña debe contener al menos una letra minúscula"
     if not re.search(r"[0-9]", password):
         return False, "La contraseña debe contener al menos un número"
-    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+    if not re.search(r"[!\"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]", password):
         return False, "La contraseña debe contener al menos un carácter especial"
     return True, "Contraseña válida y segura"
 

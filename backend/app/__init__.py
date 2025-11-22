@@ -54,37 +54,4 @@ def create_app(config_name='development'):
     app.register_blueprint(todo_controller, url_prefix='/api/productividad')
     app.register_blueprint(recompensa_controller, url_prefix='/api/gamificacion')
 
-    # Crear tablas, roles, técnicas base y recompensas base
-    with app.app_context():
-        db.create_all()
-
-        # Crear roles si no existen
-        from .models import Rol, Tecnica
-        if not Rol.query.first():
-            admin_role = Rol(nombre='administrador')
-            user_role = Rol(nombre='usuario')
-            db.session.add_all([admin_role, user_role])
-            db.session.commit()
-
-        # Inicializar técnicas base
-        tecnicas_base = [
-            {'nombre': 'Pomodoro', 'categoria': 'productividad'},
-            {'nombre': 'Meditación', 'categoria': 'bienestar'},
-            {'nombre': 'Estudio Tradicional', 'categoria': 'educativo'},
-            {'nombre': 'Descanso Activo', 'categoria': 'bienestar'}
-        ]
-        for tecnica_data in tecnicas_base:
-            tecnica_existente = Tecnica.query.filter_by(nombre=tecnica_data['nombre']).first()
-            if not tecnica_existente:
-                nueva_tecnica = Tecnica(
-                    nombre=tecnica_data['nombre'],
-                    categoria=tecnica_data['categoria']
-                )
-                db.session.add(nueva_tecnica)
-        db.session.commit()
-
-        # Inicializar recompensas base del sistema
-        from app.services.recompensa_service import RecompensaService
-        RecompensaService.inicializar_recompensas_sistema()
-
     return app

@@ -74,9 +74,9 @@ def update_usuario(usuario_id):
         data = request.get_json()
         
         # Actualizar campos permitidos
-        if 'Username' in data:
-            usuario.Username = data['Username']
-        
+        if 'username' in data:
+            usuario.username = data['username']
+
         if 'correo' in data:
             # Verificar que el nuevo email no esté en uso por otro usuario
             existing_user = Usuario.query.filter_by(correo=data['correo']).first()
@@ -131,7 +131,7 @@ def search_usuarios():
         
         usuarios = Usuario.query.filter(
             db.or_(
-                Usuario.Username.like(f'%{query}%'),
+                Usuario.username.like(f'%{query}%'),
                 Usuario.correo.like(f'%{query}%')
             )
         ).all()

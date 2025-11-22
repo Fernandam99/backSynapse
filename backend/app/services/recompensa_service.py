@@ -1,5 +1,5 @@
 # services/recompensa_service.py
-from ..models import db, Recompensa, RecompensaUsuario, Usuario, Sesion, Tarea, SesionTecnicaParam
+from app.models import db, Recompensa, RecompensaUsuario, Usuario, Sesion, Tarea, SesionTecnicaParam
 from datetime import datetime, date, timedelta
 import json
 
@@ -74,7 +74,7 @@ class RecompensaService:
         """Verifica y otorga recompensas por completar meditación"""
         
         # Contar meditaciones completadas
-        from backend.models import Tecnica
+        from app.models import Tecnica
         
         tecnica_meditacion = Tecnica.query.filter_by(nombre='Meditación').first()
         if not tecnica_meditacion:
@@ -222,7 +222,7 @@ class RecompensaService:
         """Obtiene estadísticas específicas para verificar recompensas"""
         
         # Meditaciones completadas
-        from backend.models import Tecnica
+        from app.models import Tecnica
         tecnica_meditacion = Tecnica.query.filter_by(nombre='Meditación').first()
         meditaciones_completadas = 0
         if tecnica_meditacion:

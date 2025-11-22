@@ -1,5 +1,5 @@
 # services/todo_service.py
-from ..models import db, Tarea, Usuario
+from app.models import db, Tarea, Usuario
 from datetime import datetime, date
 
 class TodoService:
@@ -18,7 +18,7 @@ class TodoService:
         for tarea in tareas:
             if tarea.sala_id:
                 if tarea.sala_id not in listas:
-                    from backend.models import Sala
+                    from app.models import Sala
                     sala = Sala.query.get(tarea.sala_id)
                     listas[tarea.sala_id] = {
                         'id': tarea.sala_id,
@@ -42,7 +42,7 @@ class TodoService:
         if not nombre:
             raise ValueError("El nombre de la lista es requerido")
         
-        from backend.models import Sala, UsuarioSala
+        from app.models import Sala, UsuarioSala
         import secrets
         import string
         

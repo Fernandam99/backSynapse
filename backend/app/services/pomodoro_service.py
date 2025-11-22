@@ -1,10 +1,10 @@
 # services/pomodoro_service.py
-from ..models import db, Sesion, Tecnica, SesionTecnicaParam
+from app.models import Sesion, Tecnica, SesionTecnicaParam
 from datetime import datetime, timedelta
 import uuid
 
 class PomodoroService:
-    TECNICA_POMODORO_ID = 'pomodoro'  # Asegúrate de que esta técnica exista en tu DB
+    TECNICA_POMODORO_ID = 'pomodoro' 
     
     @classmethod
     def iniciar_pomodoro(cls, usuario_id, duracion_trabajo=25, duracion_descanso=5, ciclos_objetivo=4, modo_no_distraccion=False):

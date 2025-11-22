@@ -281,7 +281,7 @@ def get_estadisticas_generales():
         
         tecnica_nombre = None
         if tecnica_favorita:
-            from models import Tecnica
+            from app.models import Tecnica
             tecnica = Tecnica.query.get(tecnica_favorita.tecnica_id)
             tecnica_nombre = tecnica.nombre if tecnica else None
         

@@ -402,3 +402,13 @@ def get_estadisticas_sesiones():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@sesion_bp.route('/historial', methods=['GET'])
+@jwt_required()
+def get_historial_sesiones():
+    try:
+        usuario_id = get_jwt_identity()
+        sesiones = Sesion.query.filter_by(usuario_id=usuario_id).all()
+        return jsonify([s.to_dict() for s in sesiones]), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
